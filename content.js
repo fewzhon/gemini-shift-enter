@@ -1,4 +1,20 @@
 // content.js
+let isBlockingEnabled = true; // Cache the setting
+
+// Load initial setting
+chrome.storage.sync.get(["geminiBlockEnabled"], function (result) {
+  isBlockingEnabled = result.geminiBlockEnabled ?? true;
+  console.log("Initial blocking state:", isBlockingEnabled);
+});
+
+// Listen for storage changes
+chrome.storage.onChanged.addListener(function(changes, namespace) {
+  if (namespace === 'sync' && changes.geminiBlockEnabled) {
+    isBlockingEnabled = changes.geminiBlockEnabled.newValue ?? true;
+    console.log("Blocking state changed to:", isBlockingEnabled);
+  }
+});
+
 function attachKeyInterceptor(targetEl) {
   if (!targetEl) return;
   
@@ -7,40 +23,41 @@ function attachKeyInterceptor(targetEl) {
     targetEl.removeEventListener("keydown", targetEl.geminiKeyListener, true);
   }
   
-  // Create the listener function with synchronous blocking
+  // Create the listener function
   const keyListener = function (e) {
     if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
-      // Check if blocking is enabled (default to true)
-      chrome.storage.sync.get(["geminiBlockEnabled"], function (result) {
-        if (result.geminiBlockEnabled ?? true) {
-          console.log("🚫 Enter key blocked by extension");
+      // Check if blocking is enabled (using cached value)
+      if (isBlockingEnabled) {
+        console.log("🚫 Enter key blocked by extension");
+        
+        // Block the event immediately (synchronously)
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        
+        // Insert a line break using document.execCommand (more reliable)
+        try {
+          document.execCommand('insertHTML', false, '<br>');
+        } catch (err) {
+          // Fallback method
+          const selection = window.getSelection();
+          if (selection.rangeCount > 0) {
+            const range = selection.getRangeAt(0);
+            const br = document.createElement('br');
+            range.insertNode(br);
+            range.setStartAfter(br);
+            range.collapse(false);
+            selection.removeAllRanges();
+            selection.addRange(range);
+          }
         }
-      });
-      
-      // Block the event immediately (synchronously)
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-      
-      // Insert a line break using document.execCommand (more reliable)
-      try {
-        document.execCommand('insertHTML', false, '<br>');
-      } catch (err) {
-        // Fallback method
-        const selection = window.getSelection();
-        if (selection.rangeCount > 0) {
-          const range = selection.getRangeAt(0);
-          const br = document.createElement('br');
-          range.insertNode(br);
-          range.setStartAfter(br);
-          range.collapse(false);
-          selection.removeAllRanges();
-          selection.addRange(range);
-        }
+        
+        console.log("🚫 Blocked Enter key - inserted line break instead");
+        return false; // Extra prevention
+      } else {
+        console.log("✅ Enter key allowed - blocking disabled");
+        // Don't prevent the event - let it submit normally
       }
-      
-      console.log("🚫 Blocked Enter key - inserted line break instead");
-      return false; // Extra prevention
     } else if (e.key === "Enter" && e.shiftKey) {
       console.log("✅ Shift+Enter allowed - will submit");
     }
@@ -55,11 +72,13 @@ function attachKeyInterceptor(targetEl) {
   // Also add a keypress listener as backup
   const keypressListener = function(e) {
     if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-      console.log("🚫 Also blocked on keypress");
-      return false;
+      if (isBlockingEnabled) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        console.log("🚫 Also blocked on keypress");
+        return false;
+      }
     }
   };
   
