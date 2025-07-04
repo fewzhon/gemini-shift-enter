@@ -1,5 +1,22 @@
 # Gemini Shift Enter Blocker Extension
 
+## 🧩 About This Extension
+
+The **Gemini Shift Enter Blocker** is a lightweight Chrome extension designed to improve the user experience when typing prompts into [Gemini](https://gemini.google.com/app). By default, Gemini submits your message when you press **Enter**, which can be frustrating when you're trying to add a line break.
+
+This extension **reverses that behavior**:
+- Pressing **Enter** adds a new line.
+- Pressing **Shift + Enter** adds a new line.
+- Mouse click to submits the prompt.
+- Enable/Disable the feature by toggling on/off via the popup.
+
+It also includes a toggle in the extension popup, allowing you to quickly enable or disable the functionality as needed.
+
+### ✅ Ideal for:
+- Users who frequently write multi-line prompts
+- Power users looking for more control over Gemini input
+- Anyone frustrated by accidental prompt submissions while writing
+
 ---
 
 ## 🔧 Setup Instructions
@@ -27,7 +44,7 @@
 3. Click **Load unpacked**.
 4. Select the folder where you saved the extension.
 5. ✅ Navigate to [https://gemini.google.com/app](https://gemini.google.com/app) and test:
-   - `Shift+Enter`: works normally (submits the prompt).
+   - `Shift+Enter`: works normally.
    - The extension can be toggled on/off via the popup.
    - You can toggle the block via the extension popup.
 
