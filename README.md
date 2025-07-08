@@ -45,6 +45,7 @@ It also includes a toggle in the extension popup, allowing you to quickly enable
 4. Select the folder where you saved the extension.
 5. ✅ Navigate to [https://gemini.google.com/app](https://gemini.google.com/app) and test:
    - `Shift+Enter`: works normally.
+   - `Ctrl+Enter`: submits the prompt.
    - The extension can be toggled on/off via the popup.
    - You can toggle the block via the extension popup.
 
@@ -55,7 +56,8 @@ It also includes a toggle in the extension popup, allowing you to quickly enable
 - Go to [https://gemini.google.com/app](https://gemini.google.com/app).
 - Start typing a prompt.
 - Press **Enter** → creates a new line (does NOT submit).
-- Press **Shift+Enter** → submits the prompt.
+- Press **Shift+Enter** → creates a new line (does NOT submit).
+- Press **Ctrl+Enter** → submits the prompt.
 
 > ⚠️ **Note:**  
 > You will need to use mouse click or `TAB` + `Enter` to send the message alternatively.
